@@ -4,20 +4,32 @@ import {
   Post,
   UploadedFile,
   UseInterceptors,
+  ParseIntPipe,
+  Query,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import { CityService } from '@app/city/city.service';
 import { CityEntity } from '@app/city/city.entity';
 import { parse } from 'csv-parse';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
+import { Pagination } from 'nestjs-typeorm-paginate';
 
 @Controller('cities')
 export class CityController {
   constructor(private readonly cityService: CityService) {}
 
   @Get()
-  async getAll(): Promise<CityEntity[]> {
-    return await this.cityService.getAll();
+  async index(
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+  ): Promise<Pagination<CityEntity>> {
+    limit = limit > 100 ? 100 : limit;
+    return this.cityService.getAll({
+      page,
+      limit,
+      route: '/cities',
+    });
   }
 
   @Post('upload')
