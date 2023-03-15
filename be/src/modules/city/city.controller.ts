@@ -1,11 +1,15 @@
 import {
+  Body,
   Controller,
   DefaultValuePipe,
   Get,
   HttpStatus,
+  InternalServerErrorException,
+  NotFoundException,
   ParseFilePipeBuilder,
   ParseIntPipe,
   Post,
+  Put,
   Query,
   UploadedFile,
   UseInterceptors,
@@ -41,6 +45,21 @@ export class CityController {
       },
       searchTerm,
     );
+  }
+
+  @Put()
+  async updateCity(
+    @Body() cityData: Partial<CityEntity>,
+  ): Promise<Partial<CityEntity>> {
+    try {
+      return await this.cityService.update(cityData);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw new NotFoundException(error.message);
+      }
+
+      throw new InternalServerErrorException();
+    }
   }
 
   @Post('upload')

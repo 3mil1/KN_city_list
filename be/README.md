@@ -1,5 +1,9 @@
 # City List
 
+### Technologies used
+
+- Node.js, TypeScript, NestJS, TypeORM
+
 ## Getting started
 
 ### Setup
@@ -19,33 +23,41 @@ npm run start:dev # starting back-end
 
 ### API documentation
 
-#### CityController
+### Get Cities
 
-##### GET /cities
+**Endpoint**: `GET /api/cities`
 
-###### Description
+###### Description:
 
 Get a paginated list of cities, optionally filtered by a search term.
 
 ###### Query Parameters
 
-- `page` (optional, default: `1`) - The page number to fetch.
-- `limit` (optional, default: `10`) - The number of cities to fetch per page. Maximum limit is `100`.
-- `search` (optional) - A search term to filter cities by their name.
+| Parameter | Type   | Default | Description                                                     |
+|-----------|--------|---------|-----------------------------------------------------------------|
+| page      | number | 1       | The page number to fetch.                                       |
+| limit     | number | 10      | The number of cities to fetch per page. Maximum limit is `100`. |
+| search    | string | -       | A search term to filter cities by their name.                   |
 
 ###### Response
 
 A `Pagination<CityEntity>` object containing the paginated list of cities.
 
-##### POST /cities/upload
+### Seed Cities
 
-###### Description
+**Endpoint**: `POST api/cities/upload`
 
-Upload a CSV file containing city data and insert the cities into the database. The CSV file should have columns 'id', 'name', and 'photo'.
+###### Description:
+
+Upload a CSV file containing city data and insert the cities into the database. The CSV file should
+have columns 'id', '
+name', and 'photo'.
 
 ###### Request Body
 
-- `file` - The CSV file to upload.
+| Field | Type | Description             |
+|-------|------|-------------------------|
+| file  | file | The CSV file to upload. |
 
 ###### Response
 
@@ -57,7 +69,42 @@ Example:
 {
   "message": "Cities uploaded successfully. 100 cities were inserted."
 }
+```
 
-### Technologies used
+### Update City
 
-- Node.js, TypeScript, NestJS, TypeORM
+**Endpoint**: `PUT /api/cities`
+
+###### Description:
+
+Updates the details of an existing city using the provided ID, name, and photo.
+
+###### Request Body
+
+| Field | Type   | Description                     |
+|-------|--------|---------------------------------|
+| id    | number | The ID of the city to update.   |
+| name  | string | The new name for the city.      |
+| photo | string | The new photo URL for the city. |
+
+Example:
+
+```json
+{
+  "id": "2",
+  "name": "New City Name",
+  "photo": "new_photo_url.jpg"
+}
+```
+
+###### Response:
+
+HTTP Status: 200 OK
+
+```json
+{
+  "id": "2",
+  "name": "New City Name",
+  "photo": "new_photo_url.jpg"
+}
+```

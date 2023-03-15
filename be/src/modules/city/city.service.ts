@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { QueryFailedError, Repository } from 'typeorm';
 
 import {
   IPaginationOptions,
@@ -37,6 +37,32 @@ export class CityService {
       CityService.name,
     );
     return result;
+  }
+
+  async update(cityData: Partial<CityEntity>): Promise<Partial<CityEntity>> {
+    const { id } = cityData;
+    const city = await this.cityRepository.findOne({
+      where: { id: id },
+    });
+
+    if (!city) {
+      this.logger.log(`City with ID ${id} not found`, CityService.name);
+      throw new NotFoundException(`City with ID ${id} not found`);
+    }
+
+    try {
+      await this.cityRepository.upsert(cityData, ['id']);
+      this.logger.log(`City with ID ${id} updated`, CityService.name);
+      return cityData;
+    } catch (error) {
+      const typedError = error as QueryFailedError;
+
+      this.logger.error(
+        `Error updating city: ${typedError.message}`,
+        typedError.stack,
+        CityService.name,
+      );
+    }
   }
 
   async seed(cities: CityEntity[]): Promise<number> {
