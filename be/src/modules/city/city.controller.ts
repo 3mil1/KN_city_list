@@ -30,13 +30,17 @@ export class CityController {
   async index(
     @Query('page', new DefaultValuePipe(1), ParseIntPipe) page = 1,
     @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit = 10,
+    @Query('search') searchTerm?: string,
   ): Promise<Pagination<CityEntity>> {
     limit = limit > 100 ? 100 : limit;
-    return this.cityService.getAll({
-      page,
-      limit,
-      route: '/cities',
-    });
+    return this.cityService.get(
+      {
+        page,
+        limit,
+        route: '/cities',
+      },
+      searchTerm,
+    );
   }
 
   @Post('upload')

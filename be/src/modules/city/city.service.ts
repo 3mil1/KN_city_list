@@ -17,10 +17,26 @@ export class CityService {
     private readonly logger: Logger,
   ) {}
 
-  async getAll(options: IPaginationOptions): Promise<Pagination<CityEntity>> {
+  async get(
+    options: IPaginationOptions,
+    searchTerm?: string,
+  ): Promise<Pagination<CityEntity>> {
     const queryBuilder = this.cityRepository.createQueryBuilder('cities');
 
-    return paginate<CityEntity>(queryBuilder, options);
+    if (searchTerm) {
+      queryBuilder.where('cities.name ILIKE :searchTerm', {
+        searchTerm: `%${searchTerm}%`,
+      });
+    }
+
+    const result = await paginate<CityEntity>(queryBuilder, options);
+    this.logger.log(
+      `Fetched cities (page: ${options.page}, limit: ${
+        options.limit
+      }, search: ${searchTerm || 'none'}) - total: ${result.meta.totalItems}`,
+      CityService.name,
+    );
+    return result;
   }
 
   async seed(cities: CityEntity[]): Promise<number> {
