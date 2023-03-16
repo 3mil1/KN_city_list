@@ -1,23 +1,25 @@
-import React from 'react';
-import './App.css';
-import { Route, Routes } from 'react-router-dom';
-import { Nav } from './components/nav/nav';
-import { SomePage } from './pages/somePage';
-import CitiesList from './pages/CitiesList';
-import CityDetail from './pages/CityDetail';
-
-import ErrorPage from './pages/ErrorPage';
-import './index.css';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
+import CitiesList, { loader as citiesLoader } from './pages/CitiesList';
+import CityDetail from './pages/CityDetail';
+import ErrorPage from './pages/ErrorPage';
 
 const router = createBrowserRouter([
     {
         path: '/',
         element: <CitiesList />,
         errorElement: <ErrorPage />,
+        loader: citiesLoader,
+        children: [
+            {
+                path: '/cities/page/:page',
+                element: <CitiesList />,
+                errorElement: <ErrorPage />,
+                loader: citiesLoader,
+            },
+        ],
     },
     {
-        path: '/detail/:cityId',
+        path: '/city/:cityId',
         element: <CityDetail />,
     },
 ]);
@@ -26,10 +28,6 @@ function App() {
     return (
         <div className="App">
             <RouterProvider router={router} />
-            {/*             <Routes>
-                <Route path="/" element={<CitiesList />} />
-                <Route path="/detail/:cityId" element={<CityDetail />} />
-            </Routes> */}
         </div>
     );
 }
