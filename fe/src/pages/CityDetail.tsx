@@ -98,6 +98,7 @@ export default function CityDetail() {
                     render={({ field: { value, onChange }, fieldState: { error } }) => (
                         <TextField
                             multiline
+                            rows={4}
                             fullWidth
                             id="outlined-basic"
                             label="Photo URL"

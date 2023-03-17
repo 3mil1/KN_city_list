@@ -14,7 +14,6 @@ const router = createBrowserRouter([
                 path: '/cities/page/:page',
                 element: <CitiesList />,
                 errorElement: <ErrorPage />,
-                loader: citiesLoader,
             },
         ],
     },

@@ -1,3 +1,4 @@
+import { InputBaseProps } from '@mui/material/InputBase';
 import { styled, alpha } from '@mui/material/styles';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
@@ -41,14 +42,21 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
 }));
 
-export default function SearchBar() {
+export default function SearchBar(props: InputBaseProps) {
     return (
         <Search>
             <SearchWrapper>
                 <SearchIconWrapper>
                     <SearchIcon />
                 </SearchIconWrapper>
-                <StyledInputBase placeholder="Search…" inputProps={{ 'aria-label': 'search' }} />
+                <StyledInputBase
+                    autoFocus
+                    id="search"
+                    name="search"
+                    placeholder="Search…"
+                    inputProps={{ 'aria-label': 'search' }}
+                    {...props}
+                />
             </SearchWrapper>
         </Search>
     );
