@@ -3,6 +3,10 @@ import { IsInt, IsNotEmpty, validateSync } from 'class-validator';
 
 /* eslint-disable */
 export class EnvironmentVariablesSchema {
+  @IsNotEmpty()
+  @Expose()
+  public JWT_SECRET;
+
   @Expose()
   @IsNotEmpty()
   public DATABASE_NAME = 'postgres';

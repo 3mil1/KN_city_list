@@ -5,6 +5,10 @@ import { ConfigService } from '@nestjs/config';
 export class CustomConfigService {
   constructor(private readonly configService: ConfigService) {}
 
+  public get JWT_SECRET(): string {
+    return String(this.configService.get('JWT_SECRET'));
+  }
+
   public get DATABASE_NAME(): string {
     return String(this.configService.get('DATABASE_NAME'));
   }

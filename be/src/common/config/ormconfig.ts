@@ -1,4 +1,4 @@
-import * as path from 'path';
+import { join } from 'path';
 import { DataSource } from 'typeorm';
 import { config as env } from 'dotenv';
 
@@ -11,9 +11,18 @@ const config = new DataSource({
   username: process.env.DATABASE_USERNAME,
   password: process.env.DATABASE_PASSWORD,
   database: process.env.DATABASE_NAME,
-  entities: [path.join(__dirname, '../../', '/**/*.entity{.ts,.js}')],
+  entities: [join(__dirname, '..', '..', '**', '*.entity{.ts,.js}')],
   migrations: [
-    path.join(__dirname, '../../../', 'database/migrations/**/*{.ts,.js}'),
+    join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      'database',
+      'migrations',
+      '**',
+      '*{.ts,.js}',
+    ),
   ],
   migrationsTableName: 'migrations',
   logging: true,

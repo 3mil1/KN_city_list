@@ -12,6 +12,7 @@ import {
   Put,
   Query,
   UploadedFile,
+  UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -22,6 +23,7 @@ import { CsvParserService } from '@app/modules/csv-parser/csv-parser.service';
 import { CityService } from '@app/modules/city/city.service';
 import { CityEntity } from '@app/modules/city/city.entity';
 import { CsvColumnsValidator } from '@app/modules/city/pipes/CsvColumsValidator.pipe';
+import { JwtAuthGuard } from '@app/modules/auth/guards/jwt.guard';
 
 @Controller('cities')
 export class CityController {
@@ -48,6 +50,7 @@ export class CityController {
   }
 
   @Put()
+  @UseGuards(JwtAuthGuard)
   async updateCity(
     @Body() cityData: Partial<CityEntity>,
   ): Promise<Partial<CityEntity>> {
@@ -91,8 +94,10 @@ export class CityController {
       columns: ['id', 'name', 'photo'],
       fromLine: 2,
     };
+
     const cities = await this.csvParserService.parseCsv(fileData, options);
     const insertedCount = await this.cityService.seed(cities);
+
     return {
       message: `Cities uploaded successfully. ${insertedCount} cities were inserted.`,
     };

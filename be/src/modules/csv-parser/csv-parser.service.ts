@@ -3,7 +3,7 @@ import { Options, parse } from 'csv-parse';
 
 @Injectable()
 export class CsvParserService {
-  async parseCsv<T = ParsedCity>(
+  async parseCsv<T = ICity>(
     csvString: string,
     options: Options = {},
   ): Promise<T[]> {
