@@ -20,6 +20,7 @@ const router = createBrowserRouter([
     {
         path: '/city/:cityId',
         element: <CityDetail />,
+        errorElement: <ErrorPage />,
     },
 ]);
 
