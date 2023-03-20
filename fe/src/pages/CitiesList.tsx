@@ -83,31 +83,15 @@ export default function CitiesList() {
         setCities(items);
     }, [items]);
 
+    const handleChangePage = (event: ChangeEvent<unknown>, newPage: number) => {
+        const search = searchTerm.get('search') ? `&search=${searchTerm.get('search')}` : '';
+        navigate(`/cities/page/${newPage}?page=${newPage}${search}`);
+    };
+
     useEffect(() => {
         const pageNum = parseInt(page ?? '1');
         setPageNumber(pageNum);
-        //otherwise back button does not work at all, with this it will work "time-to-time"
-        const search = searchTerm.get('search') ? `?search=${searchTerm.get('search')}` : '';
-        navigate(`/cities/page/${pageNum}${search}`);
     }, [page]);
-
-    //otherwise list wont't change if page is changed
-    useEffect(() => {
-        console.log('useeffect -pagenumber', pageNumber);
-        const search = searchTerm.get('search') ? `?search=${searchTerm.get('search')}` : '';
-        navigate(`/cities/page/${pageNumber}${search}`);
-    }, [pageNumber]);
-
-    //set pagenumber to 1 if search input is changed
-    useEffect(() => {
-        if (pageNumber !== 1 && searchTerm.get('search')) {
-            setPageNumber(1);
-        }
-    }, [searchTerm]);
-
-    const handleChangePage = (event: ChangeEvent<unknown>, newPage: number) => {
-        setPageNumber(newPage);
-    };
 
     return (
         <Container>
