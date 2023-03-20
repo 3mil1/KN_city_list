@@ -1,5 +1,14 @@
-import { useState, ChangeEvent, useEffect } from 'react';
-import { Link, useLoaderData, useParams, useNavigate, Form, useSearchParams } from 'react-router-dom';
+import { useState, ChangeEvent, useEffect, useCallback, useRef, useMemo } from 'react';
+import {
+    Link,
+    useLoaderData,
+    useParams,
+    useNavigate,
+    Form,
+    useSearchParams,
+    useLocation,
+} from 'react-router-dom';
+import debounce from 'lodash.debounce';
 import {
     ImageList,
     ImageListItem,
@@ -16,14 +25,6 @@ import EditIcon from '@mui/icons-material/Edit';
 import SearchBar from '../components/Searchbar';
 import { Gutter } from '../components/Gutter/index.style';
 
-export async function getCities(page = 1, search = '') {
-    const response = await fetch(`/api/cities?limit=9&page=${page}&search=${search}`);
-    if (!response.ok) {
-        const errorMessage = `An error occured: ${response.status} - ${response.statusText}`;
-        throw new Error(errorMessage);
-    }
-    return await response.json();
-}
 export interface CityProps {
     id: number;
     name: string;
@@ -37,7 +38,6 @@ export interface CitiesListProps {
 
 interface LoaderProps {
     data: CitiesListProps;
-    search: any;
 }
 
 interface MetaProps {
@@ -48,20 +48,40 @@ interface MetaProps {
     currentPage: number;
 }
 
+export async function getCities(page = 1, search = '') {
+    //console.log('getCities ~ response:', page);
+    const response = await fetch(`/api/cities?limit=9&page=${page}&search=${search}`);
+    if (!response.ok) {
+        const errorMessage = `An error occured: ${response.status} - ${response.statusText}`;
+        throw new Error(errorMessage);
+    }
+
+    return await response.json();
+}
+
 export async function loader({ params, request }: any): Promise<LoaderProps> {
     //console.log('loader ~ request:', request);
-    //console.log('loader ~ params:', params);
+    //console.log('loader ~ params:', params.page);
     const url = new URL(request.url);
     const search = url.searchParams.get('search') ?? '';
-    //console.log('loader ~ searchTerm:', searchTerm);
+    //console.log('search', search);
+    //console.log('loader ~ data1:');
     const data = await getCities(params.page, search);
-    return { data, search };
+    //console.log('loader ~ data2:', data);
+    /* if (data.status === 404) {
+        throw new Response('Not Found', { status: 404 });
+    } */
+    return { data };
 }
 
 export default function CitiesList() {
     const { page } = useParams();
+    //console.log('general:', page);
     const navigate = useNavigate();
-    const { data, search } = useLoaderData() as LoaderProps;
+    //const location = useLocation();
+    //console.log('CitiesList ~ location:', location);
+    //console.log('loader');
+    const { data } = useLoaderData() as LoaderProps;
     //console.log('CitiesList ~ data:', data);
     const { items, meta } = data;
     //console.log('CitiesList ~ search:', search);
@@ -70,58 +90,54 @@ export default function CitiesList() {
     const [pageNumber, setPageNumber] = useState<number>(parseInt(page ?? '1'));
     const [searchTerm, setSearchTerm] = useSearchParams();
 
-    const searchInput = searchTerm.get('search') ?? '';
-
-    const handleSearchChange = (event: any) => {
-        //console.log('handleSearchChange ~ e:', event);
-        //setSearchTerm(e);
-        /*         console.log('handleSearchChange ~ event.target.value.length:', event.target.value.length);
-        if (event.target.value.length === 1 && pageNumber !== 1) {
-            console.log('change');
-            setPageNumber(1);
-            navigate(`/cities/page/1`);
-        } */
+    const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+        //console.log('handleSearchChange ~ e:', event.target.value);
         setSearchTerm({ search: event.target.value });
     };
+
+    const debouncedOnChange = useMemo(() => {
+        return debounce(handleSearchChange, 300);
+    }, []);
 
     useEffect(() => {
         setCities(items);
     }, [items]);
 
-    //pagination would work also while search is used
     useEffect(() => {
-        console.log('CitiesList ~ pageNumber:', pageNumber);
-        console.log('CitiesList ~ page:', page);
+        //console.log('CitiesList ~ pageNumber:', pageNumber);
+        //console.log('CitiesList ~ page:', page);
         //console.log('change');
-        if (parseInt(page ?? '1') !== pageNumber) {
+        /*  if (parseInt(page ?? '1') !== pageNumber) {
             console.log('update');
-        }
-        setPageNumber(parseInt(page ?? '1'));
-        /*         const search = searchTerm.get('search') ? `?search=${searchTerm.get('search')}` : '';
-        navigate(`/cities/page/${pageNumber}${search}`); */
-        //setPageNumber(parseInt(page ?? '1'));
+        } */
+        //otherwise list wont't change if page is changed
+        const pageNum = parseInt(page ?? '1');
+        setPageNumber(pageNum);
+        //console.log('useeffect-page', page);
+
+        //otherwise back button does not work at all, with this it will work "time-to-time"
+        const search = searchTerm.get('search') ? `?search=${searchTerm.get('search')}` : '';
+        navigate(`/cities/page/${pageNum}${search}`);
     }, [page]);
 
+    //otherwise list wont't change if page is changed
     useEffect(() => {
+        //console.log('useeffect -pagenumber', pageNumber);
         const search = searchTerm.get('search') ? `?search=${searchTerm.get('search')}` : '';
         navigate(`/cities/page/${pageNumber}${search}`);
     }, [pageNumber]);
 
-    /*     useEffect(() => {
-        setCities(items);
-    }, [items]); */
-
-    /*     useEffect(() => {
-        console.log('handleSearchChange ~ search:', searchTerm.get('search'));
-        //console.log('search:', search);
-        if ((searchTerm.get('search') === '' || searchTerm.get('search') === null) && pageNumber !== 1) {
-            console.log('change2');
+    //set pagenumber to 1 if search input is changed
+    useEffect(() => {
+        //console.log('searchTerm', searchTerm.get('search'));
+        if (pageNumber !== 1 && searchTerm.get('search')) {
             setPageNumber(1);
-            navigate(`/cities/page/1`);
+            //navigate(`/cities/page/1`);
         }
-    }, [searchTerm]); */
+    }, [searchTerm]);
 
     const handleChangePage = (event: ChangeEvent<unknown>, newPage: number) => {
+        // console.log('handleChangePage ~ newPage:', newPage);
         setPageNumber(newPage);
         /*  const search = searchTerm.get('search') ? `?search=${searchTerm.get('search')}` : '';
         navigate(`/cities/page/${newPage}${search}`); */
@@ -131,13 +147,7 @@ export default function CitiesList() {
         <Container>
             <Gutter size={60} />
             <Form id="search-form" role="search">
-                {/* <input
-                    aria-label="Search contacts"
-                    type="text"
-                    value={searchTerm.get('search') ?? ''}
-                    onChange={handleSearchChange}
-                /> */}
-                <SearchBar value={searchInput} onChange={handleSearchChange} />
+                <SearchBar /* value={searchInput} */ onChange={debouncedOnChange /* handleSearchChange */} />
             </Form>
             {cities.length ? (
                 <>

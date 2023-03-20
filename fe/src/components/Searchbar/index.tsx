@@ -13,7 +13,7 @@ const Search = styled('div')(({ theme }) => ({
     marginRight: 0,
     marginLeft: 0,
     marginBottom: theme.spacing(2),
-    width: '100%',
+    width: '30%',
 }));
 
 const SearchWrapper = styled('div')(() => ({
@@ -38,7 +38,7 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
         // vertical padding + font size from searchIcon
         paddingLeft: `calc(1em + ${theme.spacing(4)})`,
         transition: theme.transitions.create('width'),
-        width: '100%',
+        width: '280px',
     },
 }));
 
@@ -53,8 +53,9 @@ export default function SearchBar(props: InputBaseProps) {
                     autoFocus
                     id="search"
                     name="search"
+                    type="search"
                     placeholder="Search…"
-                    inputProps={{ 'aria-label': 'search' }}
+                    aria-label="search"
                     {...props}
                 />
             </SearchWrapper>
