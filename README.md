@@ -24,3 +24,12 @@ This project was created by the following team members:
 - [Emil Värnomasing](https://github.com/3mil1) - Backend && Frontend Development
 - [Kadri Kajaste](https://github.com/kkajaste) - Frontend Development
 
+
+
+### Setup
+
+Change values in .env after copying:
+```bash
+cp be/.env.sample be/.env
+docker compose --env-file ./be/.env up
+```
