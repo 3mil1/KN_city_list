@@ -16,6 +16,8 @@ import { Gutter } from '../../components/Gutter/index.style';
 import { useCitiesData } from './useCitiesData';
 import { ChangeEvent, useMemo } from 'react';
 import SearchBar from '../../components/Searchbar';
+import ErrorPage from '../ErrorPage';
+import Loader from '../../components/Loader';
 import debounce from 'lodash.debounce';
 
 export default function CitiesList() {
@@ -42,7 +44,13 @@ export default function CitiesList() {
 
     const { cities, meta } = data || {};
 
-    return (
+    if (error) {
+        return <ErrorPage error={error} />;
+    }
+
+    return loading && !search ? (
+        <Loader />
+    ) : (
         <Container>
             <Gutter size={60} />
             <Form id="search-form" role="search">
