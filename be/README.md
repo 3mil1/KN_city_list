@@ -23,6 +23,14 @@ npm i
 docker compose up # starting database
 npm run start:dev # starting back-end
 ```
+Run database migrations to create tables:
+```bash
+npm run db:migrate
+```
+Seed the user data:
+```bash
+npm run seed
+```
 
 ### API documentation
 
