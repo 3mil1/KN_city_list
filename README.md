@@ -21,6 +21,6 @@ following actions:
 
 This project was created by the following team members:
 
-- [Emil Värnomasing](https://github.com/3mil1) - Backend Development
+- [Emil Värnomasing](https://github.com/3mil1) - Backend && Frontend Development
 - [Kadri Kajaste](https://github.com/kkajaste) - Frontend Development
 

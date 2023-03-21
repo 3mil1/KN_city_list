@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  backend:
+    build:
+      context: ./be
+      dockerfile: Dockerfile
+    environment:
+      - NODE_ENV=development
+      - DATABASE_URL=postgres://postgres:password@db:5432/mydb
+    depends_on:
+      - db
+    ports:
+      - "${PORT}:3000"
+    command: sh -c "npm run db:migrate && npm run seed && npm run start:dev"
+
+  db:
+    image: postgres:alpine
+    restart: always
+    build:
+      context: ./be
+      dockerfile: Dockerfile.db
+    environment:
+      - POSTGRES_USER=${DATABASE_USERNAME}
+      - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+      - POSTGRES_DB=${DATABASE_NAME}
+    ports:
+      - "${DATABASE_PORT}:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+
+  frontend:
+    build:
+      context: ./fe
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+
+volumes:
+  db:
+    driver: local

@@ -1,4 +1,4 @@
-FROM node:lts-alpine AS prod
+FROM node:lts-alpine as prod
 
 WORKDIR /app
 
@@ -6,11 +6,12 @@ COPY package*.json ./
 RUN npm install --production
 
 COPY . .
+
 RUN npm run build
 
-CMD ["npm", "run", "start:prod"]
+CMD ["npm", "run", "preview"]
 
-FROM node:lts-alpine AS dev
+FROM node:lts-alpine as dev
 
 WORKDIR /app
 
@@ -19,5 +20,5 @@ RUN npm install
 
 COPY . .
 
-CMD ["npm", "run", "start:dev"]
+CMD ["npm", "run", "dev"]
 

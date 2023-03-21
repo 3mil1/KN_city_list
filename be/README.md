@@ -8,11 +8,16 @@
 
 ### Setup
 
+Change values in .env after copying:
 ```bash
-cd be
-cp .env.sample .env # change values after copying
+cp .env.sample .env
+```
+
+```bash
 npm i
 ```
+
+
 
 ### Use
 
@@ -22,6 +27,13 @@ npm run start:dev # starting back-end
 ```
 
 ### API documentation
+
+- [User Signup](#user-signup)
+- [User Login](#user-login)
+- [City List](#city-list)
+    - [Get Cities](#get-cities)
+    - [Seed Cities](#seed-cities)
+    - [Update City](#update-city)
 
 ### Get Cities
 
@@ -106,5 +118,47 @@ HTTP Status: 200 OK
   "id": "2",
   "name": "New City Name",
   "photo": "new_photo_url.jpg"
+}
+```
+
+### User Signup
+
+**Endpoint**: `POST /api/signup`
+
+###### Description:
+
+Registers a new user with the application.
+
+###### Request Body
+
+```json
+{
+  "email": "admin@admin.ee",
+  "password": "1234"
+}
+```
+
+### User Login
+
+**Endpoint**: `POST /api/auth/login`
+
+###### Description:
+
+Logs a user into the application.
+
+###### Request Body
+
+```json
+{
+  "email": "admin@admin.ee",
+  "password": "1234"
+}
+```
+
+Response:
+
+```json
+{
+  "access_token": "token"
 }
 ```
