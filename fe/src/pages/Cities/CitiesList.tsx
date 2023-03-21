@@ -1,97 +1,46 @@
-import { useState, ChangeEvent, useEffect, useMemo } from 'react';
-import { Link, useLoaderData, useParams, useNavigate, Form, useSearchParams } from 'react-router-dom';
-import debounce from 'lodash.debounce';
+import { Form, Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
+    Card,
+    CardActionArea,
+    CardContent,
+    CardMedia,
+    Container,
     ImageList,
     ImageListItem,
-    Card,
-    CardMedia,
-    CardContent,
-    Typography,
-    Container,
     Pagination,
     Stack,
-    CardActionArea,
+    Typography,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import SearchBar from '../components/Searchbar';
-import { Gutter } from '../components/Gutter/index.style';
-
-export interface CityProps {
-    id: number;
-    name: string;
-    photo: string;
-}
-
-export interface CitiesListProps {
-    items: CityProps[];
-    meta: MetaProps;
-}
-
-interface LoaderProps {
-    data: CitiesListProps;
-}
-
-interface MetaProps {
-    totalItems: number;
-    itemCount: number;
-    itemsPerPage: number;
-    totalPages: number;
-    currentPage: number;
-}
-
-export async function getCities(page = 1, search = '') {
-    //console.log('getCities ~ response:', page);
-    const response = await fetch(`/api/cities?limit=9&page=${page}&search=${search}`);
-    if (!response.ok) {
-        const errorMessage = `An error occured: ${response.status} - ${response.statusText}`;
-        throw new Error(errorMessage);
-    }
-
-    return await response.json();
-}
-
-export async function loader({ params, request }: any): Promise<LoaderProps> {
-    const url = new URL(request.url);
-    const search = url.searchParams.get('search') ?? '';
-    const data = await getCities(params.page, search);
-    if (data.status === 404) {
-        throw new Response('Not Found', { status: 404 });
-    }
-    return { data };
-}
+import { Gutter } from '../../components/Gutter/index.style';
+import { useCitiesData } from './useCitiesData';
+import { ChangeEvent, useMemo } from 'react';
+import SearchBar from '../../components/Searchbar';
+import debounce from 'lodash.debounce';
 
 export default function CitiesList() {
     const { page } = useParams();
+    const pageNumber = page ?? '1';
     const navigate = useNavigate();
-    const { data } = useLoaderData() as LoaderProps;
-    const { items, meta } = data;
-
-    const [cities, setCities] = useState<CityProps[]>(items);
-    const [pageNumber, setPageNumber] = useState<number>(parseInt(page ?? '1'));
-    const [searchTerm, setSearchTerm] = useSearchParams();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const search = searchParams.get('search') ?? '';
+    const { data, error, loading } = useCitiesData(parseInt(pageNumber), search);
 
     const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm({ search: event.target.value });
+        const newSearchValue = event.target.value;
+        setSearchParams({ search: newSearchValue });
+    };
+
+    const handleChangePage = (event: ChangeEvent<unknown>, newPage: number) => {
+        const searchQueryString = search ? `?search=${search}` : '';
+        navigate(`/cities/page/${newPage}${searchQueryString}`);
     };
 
     const debouncedOnChange = useMemo(() => {
         return debounce(handleSearchChange, 300);
     }, []);
 
-    useEffect(() => {
-        setCities(items);
-    }, [items]);
-
-    const handleChangePage = (event: ChangeEvent<unknown>, newPage: number) => {
-        const search = searchTerm.get('search') ? `&search=${searchTerm.get('search')}` : '';
-        navigate(`/cities/page/${newPage}?page=${newPage}${search}`);
-    };
-
-    useEffect(() => {
-        const pageNum = parseInt(page ?? '1');
-        setPageNumber(pageNum);
-    }, [page]);
+    const { cities, meta } = data || {};
 
     return (
         <Container>
@@ -99,7 +48,7 @@ export default function CitiesList() {
             <Form id="search-form" role="search">
                 <SearchBar onChange={debouncedOnChange} />
             </Form>
-            {cities.length ? (
+            {cities?.length ? (
                 <>
                     <ImageList cols={3} rowHeight={300}>
                         {cities.map((city) => (
@@ -107,7 +56,7 @@ export default function CitiesList() {
                                 <Card
                                     sx={{ maxWidth: 375, textDecoration: 'none' }}
                                     component={Link}
-                                    to={`city/${city.id}`}
+                                    to={`/city/${city.id}`}
                                     state={{ data: city }}
                                 >
                                     <CardActionArea>
@@ -136,9 +85,9 @@ export default function CitiesList() {
                     </ImageList>
                     <Stack direction="row" alignItems="center" justifyContent="right" spacing={0}>
                         <Pagination
-                            count={meta.totalPages}
+                            count={meta?.totalPages}
                             shape="rounded"
-                            page={pageNumber}
+                            page={parseInt(pageNumber)}
                             onChange={handleChangePage}
                         />
                     </Stack>

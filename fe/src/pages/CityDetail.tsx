@@ -3,7 +3,7 @@ import { Form, useLocation, useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { TextField, Button, Container, Stack, Typography } from '@mui/material';
 import Gutter from '../components/Gutter';
-import { CityProps } from './CitiesList';
+import { City } from './Cities/useCitiesData';
 
 export default function CityDetail() {
     const location = useLocation();
@@ -15,7 +15,7 @@ export default function CityDetail() {
         photo: editableCity.photo,
     };
 
-    const { control, handleSubmit, reset, setValue } = useForm<CityProps>({
+    const { control, handleSubmit, reset, setValue } = useForm<City>({
         mode: 'onChange',
         defaultValues: defaultValues,
     });
@@ -28,7 +28,7 @@ export default function CityDetail() {
         required: 'Please add photo url',
     };
 
-    const saveCityData = async (data: CityProps) => {
+    const saveCityData = async (data: City) => {
         const response = await fetch(`/api/cities`, {
             method: 'PUT',
             headers: {
@@ -42,7 +42,7 @@ export default function CityDetail() {
         }
     };
 
-    const onSubmit: SubmitHandler<CityProps> = async (data) => {
+    const onSubmit: SubmitHandler<City> = async (data) => {
         if (data) {
             await saveCityData({
                 id: data.id,
