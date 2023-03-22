@@ -24,6 +24,8 @@ import { CityService } from '@app/modules/city/city.service';
 import { CityEntity } from '@app/modules/city/city.entity';
 import { CsvColumnsValidator } from '@app/modules/city/pipes/CsvColumsValidator.pipe';
 import { JwtAuthGuard } from '@app/modules/auth/guards/jwt.guard';
+import { HasRoles } from '@app/modules/role/decorators/roles.decorator';
+import { RoleGuard } from '@app/modules/role/guards/roles.guard';
 
 @Controller('cities')
 export class CityController {
@@ -50,7 +52,8 @@ export class CityController {
   }
 
   @Put()
-  @UseGuards(JwtAuthGuard)
+  @HasRoles('ROLE_ALLOW_EDIT')
+  @UseGuards(JwtAuthGuard, RoleGuard)
   async updateCity(
     @Body() cityData: Partial<CityEntity>,
   ): Promise<Partial<CityEntity>> {

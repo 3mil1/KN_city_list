@@ -13,7 +13,7 @@ export class UserController {
     @Body('email') email: string,
   ): Promise<UserEntity> {
     const hashedPassword = await hashPassword(password);
-
+    // todo remove pw hash!
     return this.usersService.createUser(email, hashedPassword);
   }
 }

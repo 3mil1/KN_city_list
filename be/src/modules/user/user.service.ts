@@ -35,4 +35,14 @@ export class UserService {
   async getUserByEmail(email: string): Promise<UserEntity> {
     return await this.userRepository.findOne({ where: { email } });
   }
+
+  async getUserRoles(userId: string): Promise<string[]> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+      relations: ['roles', 'roles.role'],
+    });
+    if (!user) return null;
+
+    return user.roles.map((role) => role.role.role);
+  }
 }
