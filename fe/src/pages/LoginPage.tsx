@@ -3,85 +3,69 @@ import { Form, useLocation, useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import { TextField, Button, Container, Stack, Typography } from '@mui/material';
 import Gutter from '../components/UI/Gutter';
-import { City } from './Cities/useCitiesData';
+import { useAuth } from '../hooks/useAuth';
 
-export default function CityDetail() {
-    const location = useLocation();
+export interface LoginProps {
+    email: string;
+    password: string;
+}
+
+export default function LoginPage() {
+    const { login } = useAuth();
+    //const location = useLocation();
     const navigate = useNavigate();
-    const editableCity = location.state?.data;
     const defaultValues = {
-        id: editableCity.id,
-        name: editableCity.name,
-        photo: editableCity.photo,
+        email: '',
+        password: '',
     };
 
-    const { control, handleSubmit, reset, setValue } = useForm<City>({
+    const { control, handleSubmit, reset, setValue } = useForm<LoginProps>({
         mode: 'onChange',
         defaultValues: defaultValues,
     });
 
-    const nameFieldRule = {
-        required: 'Please add name',
+    const emailFieldRule = {
+        required: 'Please add username',
     };
 
-    const photoFieldRule = {
-        required: 'Please add photo url',
+    const passwordFieldRule = {
+        required: 'Please add password',
     };
 
-    const saveCityData = async (data: City) => {
-        const response = await fetch(`/api/cities`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(data),
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to save accesses');
-        }
-    };
-
-    const onSubmit: SubmitHandler<City> = async (data) => {
-        if (data) {
-            await saveCityData({
-                id: data.id,
-                name: data.name,
-                photo: data.photo,
-            });
-        }
+    const onSubmit: SubmitHandler<LoginProps> = async (data) => {
+        //console.log('constonSubmit:SubmitHandler<LoginProps>= ~ data:', data);
+        login(data);
         reset(defaultValues);
-        navigate(-1);
     };
 
     const onCancel = () => {
-        navigate(-1);
+        //navigate(-1);
         reset(defaultValues);
     };
 
-    useEffect(() => {
+    /*     useEffect(() => {
         setValue('id', editableCity.id);
         setValue('name', editableCity.name);
         setValue('photo', editableCity.photo);
-    }, [editableCity]);
+    }, [editableCity]); */
 
     return (
         <Container sx={{ width: '40%' }}>
             <Gutter size={32} />
-            <Typography variant="h5">Edit city</Typography>
+            <Typography variant="h5">Login</Typography>
             <Gutter size={32} />
             <Form method="put" onSubmit={handleSubmit(onSubmit)}>
                 <Controller
                     control={control}
-                    rules={nameFieldRule}
-                    name="name"
+                    rules={emailFieldRule}
+                    name="email"
                     render={({ field: { value, onChange }, fieldState: { error } }) => (
                         <TextField
                             autoFocus
                             fullWidth
                             id="outlined-basic"
-                            label="Name"
-                            name="name"
+                            label="Email"
+                            name="email"
                             variant="outlined"
                             value={value}
                             onChange={onChange}
@@ -93,16 +77,16 @@ export default function CityDetail() {
                 <Gutter size={16} />
                 <Controller
                     control={control}
-                    rules={photoFieldRule}
-                    name="photo"
+                    rules={passwordFieldRule}
+                    name="password"
                     render={({ field: { value, onChange }, fieldState: { error } }) => (
                         <TextField
                             multiline
                             rows={4}
                             fullWidth
                             id="outlined-basic"
-                            label="Photo URL"
-                            name="photo"
+                            label="Password"
+                            name="password"
                             variant="outlined"
                             value={value}
                             onChange={onChange}
@@ -118,7 +102,7 @@ export default function CityDetail() {
                     Cancel
                 </Button>
                 <Button variant="contained" onClick={handleSubmit(onSubmit)}>
-                    Save
+                    Login
                 </Button>
             </Stack>
         </Container>

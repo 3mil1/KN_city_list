@@ -10,17 +10,20 @@ import {
     Pagination,
     Stack,
     Typography,
+    Button,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { Gutter } from '../../components/Gutter/index.style';
+import { Gutter } from '../../components/UI/Gutter/index.style';
 import { useCitiesData } from './useCitiesData';
 import { ChangeEvent, useMemo } from 'react';
-import SearchBar from '../../components/Searchbar';
+import SearchBar from '../../components/UI/Searchbar';
 import ErrorPage from '../ErrorPage';
-import Loader from '../../components/Loader';
+import Loader from '../../components/UI/Loader';
 import debounce from 'lodash.debounce';
+import { useAuth } from '../../hooks/useAuth';
 
 export default function CitiesList() {
+    const { token, logout } = useAuth();
     const { page } = useParams();
     const pageNumber = page ?? '1';
     const navigate = useNavigate();
@@ -38,6 +41,10 @@ export default function CitiesList() {
         navigate(`/cities/page/${newPage}${searchQueryString}`);
     };
 
+    const handleLogOut = () => {
+        logout();
+    };
+
     const debouncedOnChange = useMemo(() => {
         return debounce(handleSearchChange, 300);
     }, []);
@@ -52,6 +59,13 @@ export default function CitiesList() {
         <Loader />
     ) : (
         <Container>
+            {token && (
+                <Stack direction="row" alignItems="center" justifyContent="right" spacing={0}>
+                    <Button type="button" onClick={handleLogOut}>
+                        Sign Out
+                    </Button>
+                </Stack>
+            )}
             <Gutter size={60} />
             <Form id="search-form" role="search">
                 <SearchBar onChange={debouncedOnChange} />

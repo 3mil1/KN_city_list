@@ -2,19 +2,39 @@ import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom'
 import CityDetail from './pages/CityDetail';
 
 import CitiesList from './pages/Cities/CitiesList';
+import LoginPage from './pages/LoginPage';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { AuthLayout } from './components/AuthLayout';
 
 const router = createBrowserRouter([
     {
-        path: '/',
-        element: <Navigate to="/cities/page/1" />,
-    },
-    {
-        path: 'cities/page/:page',
-        element: <CitiesList />,
-    },
-    {
-        path: '/city/:cityId',
-        element: <CityDetail />,
+        element: <AuthLayout />,
+        children: [
+            {
+                path: '/',
+                element: <Navigate to="/login" />,
+            },
+            {
+                path: '/login',
+                element: <LoginPage />,
+            },
+            {
+                path: 'cities/page/:page',
+                element: (
+                    <ProtectedRoute>
+                        <CitiesList />
+                    </ProtectedRoute>
+                ),
+            },
+            {
+                path: '/city/:cityId',
+                element: (
+                    <ProtectedRoute>
+                        <CityDetail />
+                    </ProtectedRoute>
+                ),
+            },
+        ],
     },
 ]);
 
