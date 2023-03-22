@@ -34,7 +34,7 @@ import { validate } from '@app/common/config/env.schema';
           migrationsRun: true,
           migrationsTableName: 'migrations',
           keepConnectionAlive: true,
-          synchronize: true,
+          synchronize: false,
           type: 'postgres',
           host: configService.DATABASE_HOSTNAME,
           port: configService.DATABASE_PORT,

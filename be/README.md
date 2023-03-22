@@ -32,6 +32,13 @@ Seed the user data:
 npm run seed
 ```
 
+
+## Database Schema Relations
+
+### Schematic Representation
+
+![img.png](database_schema/img.png)
+
 ### API documentation
 
 - [User Signup](#user-signup)

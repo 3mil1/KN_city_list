@@ -20,6 +20,7 @@
     "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli",
     "db:drop": "npm run typeorm -- schema:drop -d src/common/config/ormconfig.ts",
     "db:generate": "npm run typeorm -- migration:generate -d src/common/config/ormconfig.ts",
+    "db:create": "npm run typeorm -- migration:create",
     "db:migrate": "npm run typeorm -- migration:run -d src/common/config/ormconfig.ts",
     "seed:generate": "npm run typeorm -- migration:create",
     "seed": "npm run typeorm -- migration:run -d src/common/config/ormconfig-seeder.ts",
