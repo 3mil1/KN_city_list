@@ -29,7 +29,7 @@ export default function CitiesList() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const search = searchParams.get('search') ?? '';
-    const { data, error, loading } = useCitiesData(parseInt(pageNumber), search);
+    const { data, error, loading } = useCitiesData(parseInt(pageNumber), search, token);
 
     const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newSearchValue = event.target.value;

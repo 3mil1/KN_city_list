@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { Form, useLocation, useNavigate } from 'react-router-dom';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
+import { useAuth } from '../hooks/useAuth';
 import { TextField, Button, Container, Stack, Typography } from '@mui/material';
 import Gutter from '../components/UI/Gutter';
 import { City } from './Cities/useCitiesData';
@@ -8,6 +9,7 @@ import { City } from './Cities/useCitiesData';
 export default function CityDetail() {
     const location = useLocation();
     const navigate = useNavigate();
+    const { token } = useAuth();
     const editableCity = location.state?.data;
     const defaultValues = {
         id: editableCity.id,
@@ -33,6 +35,7 @@ export default function CityDetail() {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(data),
         });
