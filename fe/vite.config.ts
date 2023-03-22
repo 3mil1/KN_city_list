@@ -9,8 +9,16 @@ export default defineConfig({
     resolve: {
         alias: {
             "/components": path.resolve(__dirname, "src/components"),
-            "/features": path.resolve(__dirname, "src/features"),
+            "/features": path.resolve(__dirname, "src/pages"),
         },
     },
     plugins: [react()],
+    server: {
+        proxy: {'/api': {target: 'http://localhost:3000', changeOrigin: true, secure: false}},
+        host: true,
+        port: 8000,
+    },
+    preview: {
+        port: 8000
+    }
 });

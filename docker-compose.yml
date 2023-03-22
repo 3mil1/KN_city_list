@@ -4,6 +4,7 @@ services:
     build:
       context: ./be
       dockerfile: Dockerfile
+      target: prod
     environment:
       - NODE_ENV=development
     depends_on:
@@ -17,7 +18,6 @@ services:
     restart: always
     build:
       context: ./be
-      dockerfile: Dockerfile.db
     environment:
       - POSTGRES_USER=${DATABASE_USERNAME}
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
@@ -31,8 +31,9 @@ services:
     build:
       context: ./fe
       dockerfile: Dockerfile
+      target: prod
     ports:
-      - "5173:5173"
+      - "8000:8000"
 
 volumes:
   db:
