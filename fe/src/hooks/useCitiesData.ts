@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useAuth } from '../../hooks/useAuth';
 
 interface MetaProps {
     totalItems: number;

@@ -1,10 +1,11 @@
 import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
 import CityDetail from './pages/CityDetail';
 
-import CitiesList from './pages/Cities/CitiesList';
+import CitiesList from './pages/CitiesList';
 import LoginPage from './pages/LoginPage';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { AuthLayout } from './components/AuthLayout';
+import ErrorPage from './pages/ErrorPage';
 
 const router = createBrowserRouter([
     {
@@ -25,6 +26,7 @@ const router = createBrowserRouter([
                         <CitiesList />
                     </ProtectedRoute>
                 ),
+                errorElement: <ErrorPage />,
             },
             {
                 path: '/city/:cityId',
@@ -33,6 +35,7 @@ const router = createBrowserRouter([
                         <CityDetail />
                     </ProtectedRoute>
                 ),
+                errorElement: <ErrorPage />,
             },
         ],
     },

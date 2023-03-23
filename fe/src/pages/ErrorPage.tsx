@@ -1,6 +1,6 @@
 import { Typography, Container } from '@mui/material';
 
-export default function ErrorPage({ error }: { error: Error | null }) {
+export default function ErrorPage({ error }: { error?: Error | null }) {
     return (
         <Container>
             <Typography gutterBottom variant="h5" component="div">

@@ -1,7 +1,6 @@
 import { Form, Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
     Card,
-    CardActionArea,
     CardContent,
     CardMedia,
     Container,
@@ -13,14 +12,23 @@ import {
     Button,
 } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
-import { Gutter } from '../../components/UI/Gutter/index.style';
-import { useCitiesData } from './useCitiesData';
+import { Gutter } from '../components/UI/Gutter/index.style';
+import { useCitiesData } from '../hooks/useCitiesData';
 import { ChangeEvent, useMemo } from 'react';
-import SearchBar from '../../components/UI/Searchbar';
-import ErrorPage from '../ErrorPage';
-import Loader from '../../components/UI/Loader';
+import jwt_decode from 'jwt-decode';
+import SearchBar from '../components/UI/Searchbar';
+import ErrorPage from './ErrorPage';
+import Loader from '../components/UI/Loader';
 import debounce from 'lodash.debounce';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuth } from '../hooks/useAuth';
+
+interface decodedProps {
+    email: string;
+    exp: number;
+    iat: number;
+    roles: string[];
+    sub: string;
+}
 
 export default function CitiesList() {
     const { token, logout } = useAuth();
@@ -30,6 +38,16 @@ export default function CitiesList() {
     const [searchParams, setSearchParams] = useSearchParams();
     const search = searchParams.get('search') ?? '';
     const { data, error, loading } = useCitiesData(parseInt(pageNumber), search, token);
+
+    const isEditAllowed = () => {
+        const decoded: decodedProps = jwt_decode(token);
+
+        if (decoded.roles.includes('ROLE_ALLOW_EDIT')) {
+            return true;
+        } else {
+            return false;
+        }
+    };
 
     const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
         const newSearchValue = event.target.value;
@@ -75,32 +93,27 @@ export default function CitiesList() {
                     <ImageList cols={3} rowHeight={300}>
                         {cities.map((city) => (
                             <ImageListItem key={city.id}>
-                                <Card
-                                    sx={{ maxWidth: 375, textDecoration: 'none' }}
-                                    component={Link}
-                                    to={`/city/${city.id}`}
-                                    state={{ data: city }}
-                                >
-                                    <CardActionArea>
-                                        <CardMedia
-                                            sx={{ height: 200 }}
-                                            image={city.photo}
-                                            title={city.name}
-                                        />
-                                        <CardContent>
-                                            <Stack
-                                                direction="row"
-                                                alignItems="center"
-                                                justifyContent="space-between"
-                                                spacing={0}
-                                            >
-                                                <Typography gutterBottom variant="h5" component="div">
-                                                    {city.name}
-                                                </Typography>
-                                                <EditIcon color="primary" />
-                                            </Stack>
-                                        </CardContent>
-                                    </CardActionArea>
+                                <Card sx={{ maxWidth: 375, textDecoration: 'none' }}>
+                                    <CardMedia sx={{ height: 200 }} image={city.photo} title={city.name} />
+                                    <CardContent>
+                                        <Stack
+                                            direction="row"
+                                            alignItems="center"
+                                            justifyContent="space-between"
+                                            spacing={0}
+                                        >
+                                            <Typography gutterBottom variant="h5" component="div">
+                                                {city.name}
+                                            </Typography>
+                                            {isEditAllowed() ? (
+                                                <Link to={`/city/${city.id}`} state={{ data: city }}>
+                                                    <EditIcon color="primary" />
+                                                </Link>
+                                            ) : (
+                                                <></>
+                                            )}
+                                        </Stack>
+                                    </CardContent>
                                 </Card>
                             </ImageListItem>
                         ))}

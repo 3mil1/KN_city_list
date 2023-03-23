@@ -1,12 +1,11 @@
-import { createContext, useContext, useMemo, ReactNode, useState, useEffect } from 'react';
+import { createContext, useContext, useMemo, ReactNode, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLocalStorage } from './useLocalStorage';
 import { LoginProps } from '../pages/LoginPage';
 
 interface AuthContextProps {
-    //loading: boolean;
     token: string;
-    login: (data: any) => void;
+    login: (data: LoginProps) => void;
     logout: () => void;
 }
 
@@ -21,7 +20,6 @@ const AuthContext = createContext<AuthContextProps>({
 });
 
 const postLogin = async (data: LoginProps) => {
-    //const response = await fetch(`/api/auth/login`, {
     const response = await fetch(`/api/auth/login`, {
         method: 'POST',
         headers: {
@@ -30,7 +28,6 @@ const postLogin = async (data: LoginProps) => {
         body: JSON.stringify(data),
     });
 
-    // console.log('postLogin', await response.json());
     if (!response.ok) {
         throw new Error('Failed to login');
     }
@@ -39,26 +36,21 @@ const postLogin = async (data: LoginProps) => {
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const navigate = useNavigate();
-    //const [token, setToken] = useLocalStorage('token', null);
-    const [token, setToken] = useState('');
+    const [token, setToken] = useLocalStorage('token', null);
 
     useEffect(() => {
-        //console.log('AuthProvider ~ token:', token);
         navigate('/cities/page/1');
     }, [token]);
 
     const login = async (data: LoginProps) => {
         const { access_token } = await postLogin(data);
         if (access_token) {
-            //console.log('access_token:', access_token);
-            //setToken('token', access_token);
             setToken(access_token);
             navigate('/cities/page/1');
         }
     };
 
     const logout = () => {
-        //setToken('token', '');
         setToken('');
     };
 
@@ -70,11 +62,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }),
         [token],
     );
-    //console.log('AuthProvider ~ value:', value);
     return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export const useAuth = () => {
-    //console.log('useAuth', useContext(AuthContext));
     return useContext(AuthContext);
 };

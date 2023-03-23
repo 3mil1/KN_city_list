@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
-import { Form, useLocation, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Form } from 'react-router-dom';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import { TextField, Button, Container, Stack, Typography } from '@mui/material';
+import { TextField, Button, Container, Stack, Typography, Snackbar, Alert } from '@mui/material';
 import Gutter from '../components/UI/Gutter';
 import { useAuth } from '../hooks/useAuth';
+import Loader from '../components/UI/Loader';
 
 export interface LoginProps {
     email: string;
@@ -12,14 +13,16 @@ export interface LoginProps {
 
 export default function LoginPage() {
     const { login } = useAuth();
-    //const location = useLocation();
-    const navigate = useNavigate();
+    const [error, setError] = useState<Error | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [isErrorMessageOpen, setIsErrorMessageOpen] = useState(false);
+
     const defaultValues = {
         email: '',
         password: '',
     };
 
-    const { control, handleSubmit, reset, setValue } = useForm<LoginProps>({
+    const { control, handleSubmit, reset } = useForm<LoginProps>({
         mode: 'onChange',
         defaultValues: defaultValues,
     });
@@ -33,78 +36,89 @@ export default function LoginPage() {
     };
 
     const onSubmit: SubmitHandler<LoginProps> = async (data) => {
-        //console.log('constonSubmit:SubmitHandler<LoginProps>= ~ data:', data);
-        login(data);
-        reset(defaultValues);
+        try {
+            setLoading(true);
+            setError(null);
+            if (data) {
+                await login(data);
+            }
+            reset(defaultValues);
+        } catch (error: unknown) {
+            setError(error as Error);
+            setIsErrorMessageOpen(true);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    const onCancel = () => {
-        //navigate(-1);
-        reset(defaultValues);
+    const handleCloseErrorMessage = () => {
+        setIsErrorMessageOpen(false);
     };
 
-    /*     useEffect(() => {
-        setValue('id', editableCity.id);
-        setValue('name', editableCity.name);
-        setValue('photo', editableCity.photo);
-    }, [editableCity]); */
-
-    return (
-        <Container sx={{ width: '40%' }}>
-            <Gutter size={32} />
-            <Typography variant="h5">Login</Typography>
-            <Gutter size={32} />
-            <Form method="put" onSubmit={handleSubmit(onSubmit)}>
-                <Controller
-                    control={control}
-                    rules={emailFieldRule}
-                    name="email"
-                    render={({ field: { value, onChange }, fieldState: { error } }) => (
-                        <TextField
-                            autoFocus
-                            fullWidth
-                            id="outlined-basic"
-                            label="Email"
-                            name="email"
-                            variant="outlined"
-                            value={value}
-                            onChange={onChange}
-                            error={!!error}
-                            helperText={error?.message}
-                        />
-                    )}
-                />
+    return loading ? (
+        <Loader />
+    ) : (
+        <>
+            <Snackbar
+                open={isErrorMessageOpen}
+                autoHideDuration={6000}
+                onClose={handleCloseErrorMessage}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleCloseErrorMessage} severity="error" sx={{ width: '100%' }}>
+                    {error?.message}
+                </Alert>
+            </Snackbar>
+            <Container sx={{ width: '30%' }}>
+                <Gutter size={32} />
+                <Typography variant="h5">Login</Typography>
+                <Gutter size={32} />
+                <Form method="put" onSubmit={handleSubmit(onSubmit)}>
+                    <Controller
+                        control={control}
+                        rules={emailFieldRule}
+                        name="email"
+                        render={({ field: { value, onChange }, fieldState: { error } }) => (
+                            <TextField
+                                autoFocus
+                                fullWidth
+                                label="Email"
+                                name="email"
+                                variant="outlined"
+                                value={value}
+                                onChange={onChange}
+                                error={!!error}
+                                helperText={error?.message}
+                            />
+                        )}
+                    />
+                    <Gutter size={16} />
+                    <Controller
+                        control={control}
+                        rules={passwordFieldRule}
+                        name="password"
+                        render={({ field: { value, onChange }, fieldState: { error } }) => (
+                            <TextField
+                                fullWidth
+                                label="Password"
+                                name="password"
+                                type="password"
+                                variant="outlined"
+                                value={value}
+                                onChange={onChange}
+                                error={!!error}
+                                helperText={error?.message}
+                            />
+                        )}
+                    />
+                </Form>
                 <Gutter size={16} />
-                <Controller
-                    control={control}
-                    rules={passwordFieldRule}
-                    name="password"
-                    render={({ field: { value, onChange }, fieldState: { error } }) => (
-                        <TextField
-                            multiline
-                            rows={4}
-                            fullWidth
-                            id="outlined-basic"
-                            label="Password"
-                            name="password"
-                            variant="outlined"
-                            value={value}
-                            onChange={onChange}
-                            error={!!error}
-                            helperText={error?.message}
-                        />
-                    )}
-                />
-            </Form>
-            <Gutter size={16} />
-            <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={0}>
-                <Button variant="text" onClick={onCancel}>
-                    Cancel
-                </Button>
-                <Button variant="contained" onClick={handleSubmit(onSubmit)}>
-                    Login
-                </Button>
-            </Stack>
-        </Container>
+                <Stack direction="row" alignItems="center" justifyContent="end" spacing={0}>
+                    <Button variant="contained" onClick={handleSubmit(onSubmit)}>
+                        Login
+                    </Button>
+                </Stack>
+            </Container>
+        </>
     );
 }
