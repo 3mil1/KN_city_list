@@ -1,3 +1,4 @@
+import { useEffect, ChangeEvent } from 'react';
 import { Form, Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
     Card,
@@ -14,12 +15,11 @@ import {
 import EditIcon from '@mui/icons-material/Edit';
 import { Gutter } from '../components/UI/Gutter/index.style';
 import { useCitiesData } from '../hooks/useCitiesData';
-import { ChangeEvent, useMemo } from 'react';
 import jwt_decode from 'jwt-decode';
 import SearchBar from '../components/UI/Searchbar';
 import ErrorPage from './ErrorPage';
 import Loader from '../components/UI/Loader';
-import debounce from 'lodash.debounce';
+import useDebounce from '../hooks/useDebounce';
 import { useAuth } from '../hooks/useAuth';
 
 interface decodedProps {
@@ -37,16 +37,23 @@ export default function CitiesList() {
     const navigate = useNavigate();
     const [searchParams, setSearchParams] = useSearchParams();
     const search = searchParams.get('search') ?? '';
-    const { data, error, loading } = useCitiesData(parseInt(pageNumber), search, token);
+    const debouncedSearch = useDebounce<string>(search, 500);
+    const { data, error, loading } = useCitiesData(parseInt(pageNumber), debouncedSearch, token);
+
+    //move to the first page if search is entered
+    useEffect(() => {
+        if (parseInt(page ?? '') !== 1 && searchParams.get('search')) {
+            const search = searchParams.get('search') ? `?search=${searchParams.get('search')}` : '';
+            navigate(`/cities/page/1${search}`);
+        }
+    }, [searchParams]);
 
     const isEditAllowed = () => {
         const decoded: decodedProps = jwt_decode(token);
-
         if (decoded.roles.includes('ROLE_ALLOW_EDIT')) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     };
 
     const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -55,6 +62,7 @@ export default function CitiesList() {
     };
 
     const handleChangePage = (event: ChangeEvent<unknown>, newPage: number) => {
+        const search = searchParams.get('search') ?? '';
         const searchQueryString = search ? `?search=${search}` : '';
         navigate(`/cities/page/${newPage}${searchQueryString}`);
     };
@@ -62,10 +70,6 @@ export default function CitiesList() {
     const handleLogOut = () => {
         logout();
     };
-
-    const debouncedOnChange = useMemo(() => {
-        return debounce(handleSearchChange, 300);
-    }, []);
 
     const { cities, meta } = data || {};
 
@@ -86,7 +90,7 @@ export default function CitiesList() {
             )}
             <Gutter size={60} />
             <Form id="search-form" role="search">
-                <SearchBar onChange={debouncedOnChange} />
+                <SearchBar value={search} onChange={handleSearchChange} />
             </Form>
             {cities?.length ? (
                 <>
