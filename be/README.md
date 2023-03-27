@@ -104,6 +104,9 @@ Example:
 
 Updates the details of an existing city using the provided ID, name, and photo.
 
+###### Authorization header
+`access_token` value from the `POST /api/auth/login` response
+
 ###### Request Body
 
 | Field | Type   | Description                     |
