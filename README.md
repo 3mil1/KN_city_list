@@ -26,6 +26,8 @@ cp be/.env.sample be/.env
 docker compose --env-file ./be/.env up
 ```
 
+**Do not change JWT_SECRET if you want to use preseeded users**
+
 Then open in browser
 > http://localhost:8000/login
 
