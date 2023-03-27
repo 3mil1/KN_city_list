@@ -21,7 +21,7 @@ following actions:
 
 If you like to setup for development, then change the values in docker-compose.yml file or check the README files in subfolders for detailed instructions.
 
-1. Change values in .env after copying:
+1. Change values in .env after copying.
    **Do not change JWT_SECRET if you want to use preseeded users**
 
 ```bash
@@ -29,9 +29,9 @@ cp be/.env.sample be/.env
 docker compose --env-file ./be/.env up
 ```
 
-2. Import the cities list using the `POST api/cities/upload` endpoint, see the documentation from the README file in be folder.
+1. Import the cities list using the `POST api/cities/upload` endpoint, see the documentation from the README file in be folder.
 
-3. Then open in browser > http://localhost:8000/login
+2. Then open in browser > http://localhost:8000/login
 
 In this application, there are two seeded users with different roles:
 
