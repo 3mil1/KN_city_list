@@ -26,6 +26,35 @@ cp be/.env.sample be/.env
 docker compose --env-file ./be/.env up
 ```
 
+Then open in browser
+> http://localhost:8000/login
+
+
+In this application, there are two seeded users with different roles:
+
+User with ROLE_ALLOW_EDIT:
+
+This user has the role that allows them to edit content in the application.
+
+```json 
+{
+  "email": "admin@admin.ee",
+  "password": "1234"
+}
+ ```
+
+User with ROLE_USER:
+
+This user has a basic user role with limited permissions.
+
+```json
+{
+  "email": "user@user.ee",
+  "password": "1234"
+}
+
+```
+
 ## Contributors
 
 This project was created by the following team members:
