@@ -41,13 +41,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [token, setToken] = useLocalStorage('token', null);
 
     useEffect(() => {
-        console.log('useEffect ~ token:', token);
         if (token) {
             const now = new Date();
             const decoded: DecodedProps = jwt_decode(token);
             const validUntil = new Date(decoded.exp * 1000);
             if (validUntil >= now) {
                 navigate('/cities/page/1');
+            } else {
                 setToken('');
             }
         }
