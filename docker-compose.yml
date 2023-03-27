@@ -4,6 +4,7 @@ services:
     build:
       context: ./be
       dockerfile: Dockerfile
+      # Choose the build stage: 'prod' or 'dev'
       target: prod
     environment:
       - NODE_ENV=development
@@ -31,6 +32,7 @@ services:
     build:
       context: ./fe
       dockerfile: Dockerfile
+      # Choose the build stage: 'prod' or 'dev'
       target: prod
     ports:
       - "8000:8000"

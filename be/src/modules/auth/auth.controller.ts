@@ -1,4 +1,4 @@
-import { Controller, Post, Req, UseGuards } from '@nestjs/common';
+import { BadRequestException, Controller, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
@@ -12,6 +12,9 @@ export class AuthController {
   @Post('login')
   login(@Req() req: Request): Promise<{ access_token: string }> {
     const { user } = req;
+    if (!user || typeof user !== 'object' || Array.isArray(user)) {
+      throw new BadRequestException('Invalid user object');
+    }
     return this.authService.login(user as UserEntity);
   }
 }

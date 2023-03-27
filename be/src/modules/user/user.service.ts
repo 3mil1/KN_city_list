@@ -4,6 +4,7 @@ import { QueryFailedError, Repository } from 'typeorm';
 import { UserEntity } from '@app/modules/user/user.entity';
 import { DatabaseError } from 'pg-protocol';
 import { UserResponseDto } from '@app/modules/user/dto/user.dto';
+import { PostgresErrorCode } from '@app/common/enums/postgres-error-code.enum';
 
 @Injectable()
 export class UserService {
@@ -28,7 +29,6 @@ export class UserService {
     } catch (error: any) {
       if (error instanceof QueryFailedError) {
         const err = error.driverError as DatabaseError;
-
         if (err.code === PostgresErrorCode.UniqueViolation) {
           throw new ConflictException('email already exist');
         }

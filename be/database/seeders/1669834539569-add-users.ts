@@ -13,21 +13,34 @@ export class AddUser1669834539569 implements MigrationInterface {
 
     await queryRunner.manager.save([userRole, editorRole]);
 
-    const user = {
+    const adminUser = {
       email: 'admin@admin.ee',
       passwordHash:
         '$scrypt$N=32768,r=8,p=1,maxmem=67108864$4/6tvajNiL4WopM5DGWL7tUhPar5/xv9O9H8HqzeJLM$++WcCncFjUjrajwQeGzry1PCai7ns8Fq1eTHY38RvQ4NwxjNlHVsQf3igYfjnF1YhbStX3m0fTUfwZizytvC7Q',
     };
 
-    const insertedUser = await queryRunner.manager.insert(UserEntity, user);
+    const normalUser = {
+      email: 'user@user.ee',
+      passwordHash:
+        '$scrypt$N=32768,r=8,p=1,maxmem=67108864$62/E/C1u5bglWkPZdkkQ3ES7XUexT4asujCJAsxawKY$OKEkLK/H+BvqYK/IVaai28t/yDLEMbNYiZARwK8Cxe4J4yUJTiGh/7Rr+TYCuH0wYpLzqF1qG3WI2EsRZo2HYA',
+    };
+
+    const insertedAdminUser = await queryRunner.manager.insert(UserEntity, adminUser);
+    const insertedNormalUser = await queryRunner.manager.insert(UserEntity, normalUser);
+
+    const adminRoleRelation = new UserRoleEntity();
+    adminRoleRelation.user = await queryRunner.manager.findOne(UserEntity, {
+      where: { id: insertedAdminUser.identifiers[0].id as string },
+    });
+    adminRoleRelation.role = editorRole;
 
     const userRoleRelation = new UserRoleEntity();
     userRoleRelation.user = await queryRunner.manager.findOne(UserEntity, {
-      where: { id: insertedUser.identifiers[0].id as string },
+      where: { id: insertedNormalUser.identifiers[0].id as string },
     });
-    userRoleRelation.role = editorRole;
+    userRoleRelation.role = userRole;
 
-    await queryRunner.manager.save(userRoleRelation);
+    await queryRunner.manager.save([adminRoleRelation, userRoleRelation]);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {

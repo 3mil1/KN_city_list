@@ -1,4 +1,4 @@
-import { Injectable, NotAcceptableException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { UserService } from '@app/modules/user/user.service';
 import { UserEntity } from '@app/modules/user/user.entity';
@@ -14,8 +14,8 @@ export class AuthService {
 
     const passwordIsValid = await validatePassword(password, user.passwordHash);
 
-    if (!user) {
-      throw new NotAcceptableException('could not find the user');
+    if (!passwordIsValid) {
+      throw new UnauthorizedException('Invalid email or password');
     }
     if (user && passwordIsValid) {
       return user;
