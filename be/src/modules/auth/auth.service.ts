@@ -6,10 +6,7 @@ import { validatePassword } from '@app/common/utils/crypto-password';
 
 @Injectable()
 export class AuthService {
-  constructor(
-    private readonly usersService: UserService,
-    private jwtService: JwtService,
-  ) {}
+  constructor(private readonly usersService: UserService, private jwtService: JwtService) {}
 
   async validateUser(email: string, password: string): Promise<UserEntity> {
     const user = await this.usersService.getUserByEmail(email);

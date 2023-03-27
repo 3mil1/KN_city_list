@@ -11,9 +11,7 @@ const config = new DataSource({
   database: process.env.DATABASE_NAME,
 
   entities: [join(__dirname, '..', '..', '**', '*.entity{.ts,.js}')],
-  migrations: [
-    join(__dirname, '..', '..', '..', 'database', 'seeders', '*{.ts,.js}'),
-  ],
+  migrations: [join(__dirname, '..', '..', '..', 'database', 'seeders', '*{.ts,.js}')],
 
   migrationsTableName: 'seeders',
   logging: true,

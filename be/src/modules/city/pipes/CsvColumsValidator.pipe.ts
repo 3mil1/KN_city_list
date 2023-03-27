@@ -26,8 +26,6 @@ export class CsvColumnsValidator extends FileValidator<{ columns: string[] }> {
       return `Invalid file extension. Please upload a CSV file.`;
     }
 
-    return `Invalid CSV file. It must have the following columns: ${this.validationOptions.columns.join(
-      ', ',
-    )}`;
+    return `Invalid CSV file. It must have the following columns: ${this.validationOptions.columns.join(', ')}`;
   }
 }

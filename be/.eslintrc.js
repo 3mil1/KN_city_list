@@ -1,3 +1,7 @@
+const fs = require('fs');
+const path = require('path');
+const prettierConfig = JSON.parse(fs.readFileSync(path.resolve(__dirname, '.prettierrc'), 'utf8'));
+
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -5,11 +9,12 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'prettier'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:@typescript-eslint/recommended-requiring-type-checking',
     'plugin:prettier/recommended',
+    'prettier',
   ],
   root: true,
   env: {
@@ -26,7 +31,8 @@ module.exports = {
     '@typescript-eslint/no-unsafe-call': 'error',
     '@typescript-eslint/no-unsafe-member-access': 'error',
     '@typescript-eslint/no-unsafe-return': 'error',
-    "@typescript-eslint/no-unused-vars": "off",
-    "no-unused-vars": "off"
+    '@typescript-eslint/no-unused-vars': 'off',
+    'no-unused-vars': 'off',
+    'prettier/prettier': ['error', prettierConfig],
   },
 };

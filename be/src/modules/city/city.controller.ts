@@ -29,10 +29,7 @@ import { RoleGuard } from '@app/modules/role/guards/roles.guard';
 
 @Controller('cities')
 export class CityController {
-  constructor(
-    private readonly csvParserService: CsvParserService,
-    private readonly cityService: CityService,
-  ) {}
+  constructor(private readonly csvParserService: CsvParserService, private readonly cityService: CityService) {}
 
   @Get()
   async index(
@@ -54,9 +51,7 @@ export class CityController {
   @Put()
   @HasRoles('ROLE_ALLOW_EDIT')
   @UseGuards(JwtAuthGuard, RoleGuard)
-  async updateCity(
-    @Body() cityData: Partial<CityEntity>,
-  ): Promise<Partial<CityEntity>> {
+  async updateCity(@Body() cityData: Partial<CityEntity>): Promise<Partial<CityEntity>> {
     try {
       return await this.cityService.update(cityData);
     } catch (error) {
@@ -76,9 +71,7 @@ export class CityController {
         .addFileTypeValidator({
           fileType: 'csv',
         })
-        .addValidator(
-          new CsvColumnsValidator({ columns: ['id', 'name', 'photo'] }),
-        )
+        .addValidator(new CsvColumnsValidator({ columns: ['id', 'name', 'photo'] }))
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
         }),

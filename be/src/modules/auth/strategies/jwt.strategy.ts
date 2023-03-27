@@ -8,10 +8,7 @@ import { CustomConfigService } from '@app/common/config/custom-config.service';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(
-    private readonly userService: UserService,
-    private readonly configService: CustomConfigService,
-  ) {
+  constructor(private readonly userService: UserService, private readonly configService: CustomConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: configService.JWT_SECRET,

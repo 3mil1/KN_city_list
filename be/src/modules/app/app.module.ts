@@ -8,13 +8,7 @@ import { CustomConfigModule } from '@app/common/config/custom-config.module';
 import { AuthModule } from '@app/modules/auth/auth.module';
 
 @Module({
-  imports: [
-    CustomConfigModule,
-    WinstonModule.forRoot(loggerConfig),
-    CityModule,
-    UserModule,
-    AuthModule,
-  ],
+  imports: [CustomConfigModule, WinstonModule.forRoot(loggerConfig), CityModule, UserModule, AuthModule],
   providers: [AppService, Logger],
 })
 export class AppModule {}

@@ -10,10 +10,7 @@ import { JwtStrategy } from '@app/modules/auth/strategies/jwt.strategy';
 import { LocalStrategy } from '@app/modules/auth/strategies/local.stratery';
 import { CustomConfigModule } from '@app/common/config/custom-config.module';
 import { CustomConfigService } from '@app/common/config/custom-config.service';
-import {
-  hashPassword,
-  validatePassword,
-} from '@app/common/utils/crypto-password';
+import { hashPassword, validatePassword } from '@app/common/utils/crypto-password';
 
 @Module({
   imports: [

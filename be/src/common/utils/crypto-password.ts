@@ -19,9 +19,7 @@ const parseOptions = (options: string): Record<string, number> => {
   return Object.fromEntries(values);
 };
 
-const deserializeHash = (
-  phcString: string,
-): { params: Record<string, number>; salt: Buffer; hash: Buffer } => {
+const deserializeHash = (phcString: string): { params: Record<string, number>; salt: Buffer; hash: Buffer } => {
   const [, name, options, salt64, hash64] = phcString.split('$');
   if (name !== 'scrypt') {
     throw new Error('Node.js crypto module only supports scrypt');
@@ -52,10 +50,7 @@ export const hashPassword = (password: string): Promise<string> =>
     });
   });
 
-export const validatePassword = (
-  password: string,
-  serHash: string,
-): Promise<boolean> => {
+export const validatePassword = (password: string, serHash: string): Promise<boolean> => {
   const { params, salt, hash } = deserializeHash(serHash);
   return new Promise((resolve, reject) => {
     const callback = (err: Error | null, hashedPassword?: Buffer) => {

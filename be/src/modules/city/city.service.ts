@@ -2,11 +2,7 @@ import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { QueryFailedError, Repository } from 'typeorm';
 
-import {
-  IPaginationOptions,
-  paginate,
-  Pagination,
-} from 'nestjs-typeorm-paginate';
+import { IPaginationOptions, paginate, Pagination } from 'nestjs-typeorm-paginate';
 import { CityEntity } from '@app/modules/city/city.entity';
 
 @Injectable()
@@ -17,13 +13,8 @@ export class CityService {
     private readonly logger: Logger,
   ) {}
 
-  async get(
-    options: IPaginationOptions,
-    searchTerm?: string,
-  ): Promise<Pagination<CityEntity>> {
-    const queryBuilder = this.cityRepository
-      .createQueryBuilder('cities')
-      .orderBy({ 'cities.name': 'ASC' });
+  async get(options: IPaginationOptions, searchTerm?: string): Promise<Pagination<CityEntity>> {
+    const queryBuilder = this.cityRepository.createQueryBuilder('cities').orderBy({ 'cities.name': 'ASC' });
 
     if (searchTerm) {
       queryBuilder.where('cities.name ILIKE :searchTerm', {
@@ -33,9 +24,9 @@ export class CityService {
 
     const result = await paginate<CityEntity>(queryBuilder, options);
     this.logger.log(
-      `Fetched cities (page: ${options.page}, limit: ${
-        options.limit
-      }, search: ${searchTerm || 'none'}) - total: ${result.meta.totalItems}`,
+      `Fetched cities (page: ${options.page}, limit: ${options.limit}, search: ${searchTerm || 'none'}) - total: ${
+        result.meta.totalItems
+      }`,
       CityService.name,
     );
     return result;
@@ -59,11 +50,7 @@ export class CityService {
     } catch (error) {
       const typedError = error as QueryFailedError;
 
-      this.logger.error(
-        `Error updating city: ${typedError.message}`,
-        typedError.stack,
-        CityService.name,
-      );
+      this.logger.error(`Error updating city: ${typedError.message}`, typedError.stack, CityService.name);
     }
   }
 
@@ -84,15 +71,10 @@ export class CityService {
         .orIgnore()
         .execute();
 
-      insertedCount += result.generatedMaps.filter(
-        (obj) => Object.keys(obj).length > 0,
-      ).length;
+      insertedCount += result.generatedMaps.filter((obj) => Object.keys(obj).length > 0).length;
     }
 
-    this.logger.log(
-      `Total cities inserted: ${insertedCount}`,
-      CityService.name,
-    );
+    this.logger.log(`Total cities inserted: ${insertedCount}`, CityService.name);
     return insertedCount;
   }
 }
