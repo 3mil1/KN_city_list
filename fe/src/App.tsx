@@ -1,20 +1,52 @@
-import React from 'react';
-import './App.css';
-import { Route, Routes } from 'react-router-dom';
-import { Nav } from './components/nav/nav';
-import { SomePage } from './pages/somePage';
+import { createBrowserRouter, Navigate, RouterProvider } from 'react-router-dom';
+import CityDetail from './pages/CityDetail';
+
+import CitiesList from './pages/CitiesList';
+import LoginPage from './pages/LoginPage';
+import { ProtectedRoute } from './components/ProtectedRoute';
+import { AuthLayout } from './components/AuthLayout';
+import ErrorPage from './pages/ErrorPage';
+
+const router = createBrowserRouter([
+    {
+        element: <AuthLayout />,
+        children: [
+            {
+                path: '/',
+                element: <Navigate to="/login" />,
+            },
+            {
+                path: '/login',
+                element: <LoginPage />,
+            },
+            {
+                path: 'cities/page/:page',
+                element: (
+                    <ProtectedRoute>
+                        <CitiesList />
+                    </ProtectedRoute>
+                ),
+                errorElement: <ErrorPage />,
+            },
+            {
+                path: '/city/:cityId',
+                element: (
+                    <ProtectedRoute>
+                        <CityDetail />
+                    </ProtectedRoute>
+                ),
+                errorElement: <ErrorPage />,
+            },
+        ],
+    },
+]);
 
 function App() {
-  return (
-    <div className="App">
-      <div>Hello</div>
-
-      <Nav />
-      <Routes>
-        <Route path="/some" element={<SomePage />} />
-      </Routes>
-    </div>
-  );
+    return (
+        <div className="App">
+            <RouterProvider router={router} />
+        </div>
+    );
 }
 
 export default App;
