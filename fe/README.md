@@ -15,13 +15,11 @@
 ### Setup
 
 ```bash
-cd fe
 npm i # install front-end depencencies
 ```
 
 ### Use
 
 ```bash
-cd fe
 npm run dev # starting front-end
 ```

@@ -22,7 +22,7 @@ import Loader from '../components/UI/Loader';
 import useDebounce from '../hooks/useDebounce';
 import { useAuth } from '../hooks/useAuth';
 
-interface decodedProps {
+export interface DecodedProps {
     email: string;
     exp: number;
     iat: number;
@@ -49,7 +49,7 @@ export default function CitiesList() {
     }, [searchParams]);
 
     const isEditAllowed = () => {
-        const decoded: decodedProps = jwt_decode(token);
+        const decoded: DecodedProps = jwt_decode(token);
         if (decoded.roles.includes('ROLE_ALLOW_EDIT')) {
             return true;
         }

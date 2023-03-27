@@ -1,5 +1,7 @@
 import { createContext, useContext, useMemo, ReactNode, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import jwt_decode from 'jwt-decode';
+import { DecodedProps } from '../pages/CitiesList';
 import { useLocalStorage } from './useLocalStorage';
 import { LoginProps } from '../pages/LoginPage';
 
@@ -39,7 +41,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const [token, setToken] = useLocalStorage('token', null);
 
     useEffect(() => {
-        navigate('/cities/page/1');
+        const now = new Date();
+        const decoded: DecodedProps = jwt_decode(token);
+        const validUntil = new Date(decoded.exp * 1000);
+        if (validUntil >= now) {
+            navigate('/cities/page/1');
+        }
     }, [token]);
 
     const login = async (data: LoginProps) => {
