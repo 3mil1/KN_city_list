@@ -5,14 +5,17 @@ services:
       context: ./be
       dockerfile: Dockerfile
       # Choose the build stage: 'prod' or 'dev'
-      target: prod
+      target: dev
     environment:
       - NODE_ENV=development
     depends_on:
       - db
     ports:
+      - "9229:9229" # 9229 is the default node debug port
       - "${PORT}:3000"
-    command: sh -c "npm run db:migrate && npm run seed && npm run start:dev"
+    command: sh -c "npm run db:migrate && npm run seed && npm run start:debug"
+    volumes:
+      - ./be/src:/app/src
 
   db:
     image: postgres:alpine
@@ -33,7 +36,7 @@ services:
       context: ./fe
       dockerfile: Dockerfile
       # Choose the build stage: 'prod' or 'dev'
-      target: prod
+      target: dev
     ports:
       - "8000:8000"
     environment:

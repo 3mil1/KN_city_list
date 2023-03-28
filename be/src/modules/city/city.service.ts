@@ -15,7 +15,6 @@ export class CityService {
 
   async get(options: IPaginationOptions, searchTerm?: string): Promise<Pagination<CityEntity>> {
     const queryBuilder = this.cityRepository.createQueryBuilder('cities').orderBy({ 'cities.name': 'ASC' });
-
     if (searchTerm) {
       queryBuilder.where('cities.name ILIKE :searchTerm', {
         searchTerm: `%${searchTerm}%`,
